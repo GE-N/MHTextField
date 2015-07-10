@@ -163,6 +163,8 @@
             datePicker.datePickerMode = UIDatePickerModeDate;
         else
             datePicker.datePickerMode = UIDatePickerModeTime;
+      
+        datePicker.maximumDate = self.maximumDate;
         [datePicker addTarget:self action:@selector(datePickerValueChanged:) forControlEvents:UIControlEventValueChanged];
         
         if (![textField.text isEqualToString:@""]){

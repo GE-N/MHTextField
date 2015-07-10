@@ -12,7 +12,9 @@
 @property (nonatomic) BOOL required;
 @property (nonatomic, strong) UIToolbar *toolbar;
 @property (nonatomic, strong) UIScrollView *scrollView;
+
 @property (nonatomic, strong) NSString *dateFormat;
+@property (nonatomic, strong) NSDate *maximumDate;
 
 @property (nonatomic, setter = setEmailField:) BOOL isEmailField;
 @property (nonatomic, setter = setDateField:) BOOL isDateField;
