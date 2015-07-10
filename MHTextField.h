@@ -13,6 +13,7 @@
 @property (nonatomic, strong) UIToolbar *toolbar;
 @property (nonatomic, strong) UIScrollView *scrollView;
 
+@property (nonatomic, readonly) NSDate *selectedDate;
 @property (nonatomic, strong) NSString *dateFormat;
 @property (nonatomic, strong) NSDate *maximumDate;
 

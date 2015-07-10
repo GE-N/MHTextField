@@ -255,6 +255,23 @@
     return _isValid;
 }
 
+- (NSDate *)selectedDate
+{
+  if (!self.isDateField) {
+    return nil;
+  }
+  
+  static NSDateFormatter *dateFormatter;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    dateFormatter = [[NSDateFormatter alloc] init];
+  });
+  
+  dateFormatter.dateFormat = self.dateFormat;
+  
+  return [dateFormatter dateFromString:self.text];
+}
+
 - (void)setDateFieldWithFormat:(NSString *)dateFormat
 {
     self.isDateField = YES;
