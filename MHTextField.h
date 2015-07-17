@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+typedef void(^deleteBackwardBlock)(id);
+
 @interface MHTextField : UITextField
 
 @property (nonatomic) BOOL required;
@@ -22,6 +24,11 @@
 @property (nonatomic, setter = setTimeField:) BOOL isTimeField;
 @property (nonatomic, readonly) BOOL isValid;
 
+@property (nonatomic, strong) NSArray *orderedTextFieldsResponder;
+
+@property (nonatomic, copy) void (^barButtonDisplayedBlock)(UIBarButtonItem*, UIBarButtonItem*);
+@property (nonatomic, copy) void (^deleteBackwardBlock)(MHTextField *);
+
 - (BOOL) validate;
 - (void) setDateFieldWithFormat:(NSString *)dateFormat;
 
@@ -29,5 +36,12 @@
  Invoked when text field is disabled or input is invalid. Override to set your own tint or background color.
  */
 - (void) setNeedsAppearance:(id)sender;
+
+/**
+ * Methods for set Previous/Next activation.
+ */
+
+- (void)setKeyboardPreviousButtonEnable:(BOOL)val;
+- (void)setKeyboardNextButtonEnable:(BOOL)val;
 
 @end

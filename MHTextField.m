@@ -12,6 +12,9 @@
     UITextField *_textField;
     BOOL _disabled;
     BOOL _enabled;
+  
+  BOOL _previousButtonState;
+  BOOL _nextButtonState;
 }
 
 @property (nonatomic) BOOL keyboardIsShown;
@@ -24,8 +27,6 @@
 
 @property (nonatomic , strong) UIBarButtonItem *previousBarButton;
 @property (nonatomic , strong) UIBarButtonItem *nextBarButton;
-
-@property (nonatomic, strong) NSMutableArray *textFields;
 
 @property (weak) id keyboardDidShowNotificationObserver;
 @property (weak) id keyboardWillHideNotificationObserver;
@@ -58,12 +59,13 @@
 
 - (void)layoutSubviews
 {
-    [super layoutSubviews];
-    
+  [super layoutSubviews];
+  
+  if (self.orderedTextFieldsResponder.count == 0) {
     [self markTextFieldsWithTagInView:self.superview];
-    
-    _enabled = YES;
-    
+  }
+  
+  _enabled = YES;
 }
 
 - (void)setup{
@@ -78,8 +80,10 @@
     [toolbar setBarStyle:UIBarStyleDefault];
     
     self.previousBarButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Previous", @"Previous") style:UIBarButtonItemStyleBordered target:self action:@selector(previousButtonIsClicked:)];
+    self.previousBarButton.enabled = _previousButtonState;
     self.nextBarButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Next", @"Next") style:UIBarButtonItemStyleBordered target:self action:@selector(nextButtonIsClicked:)];
-    
+    self.nextBarButton.enabled = _nextButtonState;
+  
     UIBarButtonItem *flexBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     
     UIBarButtonItem *doneBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneButtonIsClicked:)];
@@ -88,20 +92,22 @@
     
     toolbar.items = barButtonItems;
     
-    self.textFields = [[NSMutableArray alloc]init];
+    self.orderedTextFieldsResponder = [[NSMutableArray alloc]init];
 }
 
 - (void)markTextFieldsWithTagInView:(UIView*)view{
+  NSMutableArray *mutatedTextfieldsArray = [NSMutableArray arrayWithCapacity:0];
     int index = 0;
-    if ([self.textFields count] == 0){
+    if ([self.orderedTextFieldsResponder count] == 0){
         for(UIView *subView in view.subviews){
             if ([subView isKindOfClass:[MHTextField class]]){
                 MHTextField *textField = (MHTextField*)subView;
                 textField.tag = index;
-                [self.textFields addObject:textField];
+                [mutatedTextfieldsArray addObject:textField];
                 index++;
             }
         }
+      self.orderedTextFieldsResponder = [NSArray arrayWithArray:mutatedTextfieldsArray];
     }
 }
 
@@ -113,10 +119,10 @@
 
 - (void) nextButtonIsClicked:(id)sender{
     NSInteger tagIndex = self.tag;
-    MHTextField *textField =  [self.textFields objectAtIndex:++tagIndex];
+    MHTextField *textField =  [self.orderedTextFieldsResponder objectAtIndex:++tagIndex];
     
-    while (!textField.isEnabled && tagIndex < [self.textFields count])
-        textField = [self.textFields objectAtIndex:++tagIndex];
+    while (!textField.isEnabled && tagIndex < [self.orderedTextFieldsResponder count])
+        textField = [self.orderedTextFieldsResponder objectAtIndex:++tagIndex];
     
     [self becomeActive:textField];
 }
@@ -124,10 +130,10 @@
 - (void) previousButtonIsClicked:(id)sender{
     NSInteger tagIndex = self.tag;
     
-    MHTextField *textField =  [self.textFields objectAtIndex:--tagIndex];
+    MHTextField *textField =  [self.orderedTextFieldsResponder objectAtIndex:--tagIndex];
     
-    while (!textField.isEnabled && tagIndex < [self.textFields count])
-        textField = [self.textFields objectAtIndex:--tagIndex];
+    while (!textField.isEnabled && tagIndex < [self.orderedTextFieldsResponder count])
+        textField = [self.orderedTextFieldsResponder objectAtIndex:--tagIndex];
     
     [self becomeActive:textField];
 }
@@ -142,9 +148,9 @@
     BOOL previousBarButtonEnabled = NO;
     BOOL nexBarButtonEnabled = NO;
     
-    for (int index = 0; index < [self.textFields count]; index++) {
+    for (int index = 0; index < [self.orderedTextFieldsResponder count]; index++) {
         
-        UITextField *textField = [self.textFields objectAtIndex:index];
+        UITextField *textField = [self.orderedTextFieldsResponder objectAtIndex:index];
         
         if (index < tag)
             previousBarButtonEnabled |= textField.isEnabled;
@@ -154,6 +160,10 @@
     
     self.previousBarButton.enabled = previousBarButtonEnabled;
     self.nextBarButton.enabled = nexBarButtonEnabled;
+  
+  if (self.barButtonDisplayedBlock) {
+    self.barButtonDisplayedBlock(self.previousBarButton, self.nextBarButton);
+  }
 }
 
 - (void) selectInputView:(UITextField *)textField{
@@ -372,5 +382,44 @@
     _textField = nil;
 }
 
+#pragma mark - Keyboard next responder config methods
+
+- (void)setKeyboardPreviousButtonEnable:(BOOL)val
+{
+  self.previousBarButton.enabled = val;
+}
+
+- (void)setKeyboardNextButtonEnable:(BOOL)val
+{
+  self.nextBarButton.enabled = val;
+}
+
+@end
+
+#pragma mark - UIKeyInput
+
+@interface MHTextField (UIKeyInputIntegrate) <UIKeyInput>
+
+@end
+
+@implementation MHTextField (UIKeyInputIntegrate)
+
+- (void)insertText:(NSString *)text
+{
+  [super insertText:text];
+}
+
+- (void)deleteBackward
+{
+  [super deleteBackward];
+  if (self.deleteBackwardBlock) {
+    self.deleteBackwardBlock(self);
+  }
+}
+
+- (BOOL)hasText
+{
+  return [super hasText];
+}
 
 @end
