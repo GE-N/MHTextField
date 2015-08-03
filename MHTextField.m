@@ -190,10 +190,8 @@
             [dateFormatter setDateStyle:NSDateFormatterShortStyle];
             [dateFormatter setLocale:[NSLocale currentLocale]];
             
-            NSDate *selectedDate = [dateFormatter dateFromString:textField.text];
-            
-            if (selectedDate != nil)
-                [datePicker setDate:selectedDate];
+            if (self.selectedDate != nil)
+                [datePicker setDate:self.selectedDate];
         }
         [textField setInputView:datePicker];
     }
