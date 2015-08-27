@@ -7,7 +7,7 @@
 
 #import "MHTextField.h"
 
-@interface MHTextField()
+@interface MHTextField() <UIPickerViewDataSource, UIPickerViewDelegate>
 {
     UITextField *_textField;
     BOOL _disabled;
@@ -30,6 +30,8 @@
 
 @property (weak) id keyboardDidShowNotificationObserver;
 @property (weak) id keyboardWillHideNotificationObserver;
+
+- (void) selectInputView:(UITextField *)textField;
 
 @end
 
@@ -195,6 +197,21 @@
         }
         [textField setInputView:datePicker];
     }
+    else if (_isPickerField) {
+      UIPickerView *pickerView = [[UIPickerView alloc] init];
+      pickerView.dataSource = self;
+      pickerView.delegate = self;
+      
+      NSUInteger selectedIdx = [self.pickerDatas indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+        return [self.text isEqualToString:obj];
+      }];
+      
+      selectedIdx = (selectedIdx == NSNotFound) ? 0 : selectedIdx;
+      [self pickerView:pickerView didSelectRow:selectedIdx inComponent:0];
+      [pickerView selectRow:selectedIdx inComponent:0 animated:YES];
+      
+      [textField setInputView:pickerView];
+    }
 }
 
 - (void)datePickerValueChanged:(id)sender{
@@ -273,6 +290,7 @@
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.calendar = [NSCalendar currentCalendar];
   });
   
   dateFormatter.dateFormat = self.dateFormat;
@@ -390,6 +408,41 @@
 - (void)setKeyboardNextButtonEnable:(BOOL)val
 {
   self.nextBarButton.enabled = val;
+}
+
+#pragma mark - UIPickerView required methods
+
+- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
+  return 1;
+}
+
+- (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
+  NSInteger count = 0;
+  if (self.pickerDatas != nil) {
+    count = [self.pickerDatas count];
+  }
+  return count;
+}
+
+- (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
+{
+  NSString *title = @"";
+  if (self.pickerDatas != nil) {
+    title = self.pickerDatas[row];
+  }
+  return title;
+}
+
+- (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
+{
+  NSString *selectedTitle = self.pickerDatas[row];
+  if (self.pickerDatas != nil) {
+    self.text = selectedTitle;
+    
+    if (self.pickerChangedBlock) {
+      self.pickerChangedBlock(pickerView);
+    }
+  }
 }
 
 @end

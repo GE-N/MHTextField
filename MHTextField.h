@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 typedef void(^deleteBackwardBlock)(id);
+typedef void(^pickerChangedValueBlock)(id);
 
 @interface MHTextField : UITextField
 
@@ -20,9 +21,13 @@ typedef void(^deleteBackwardBlock)(id);
 @property (nonatomic, strong) NSDate *maximumDate;
 
 @property (nonatomic, setter = setEmailField:) BOOL isEmailField;
+@property (nonatomic, setter = setPickerField:) BOOL isPickerField;
 @property (nonatomic, setter = setDateField:) BOOL isDateField;
 @property (nonatomic, setter = setTimeField:) BOOL isTimeField;
 @property (nonatomic, readonly) BOOL isValid;
+
+@property (nonatomic, strong) NSArray *pickerDatas;
+@property (nonatomic, copy) pickerChangedValueBlock pickerChangedBlock;
 
 @property (nonatomic, strong) NSArray *orderedTextFieldsResponder;
 
