@@ -19,6 +19,7 @@ typedef void(^pickerChangedValueBlock)(id);
 @property (nonatomic, readonly) NSDate *selectedDate;
 @property (nonatomic, strong) NSString *dateFormat;
 @property (nonatomic, strong) NSDate *maximumDate;
+@property (nonatomic, strong) NSDate *minimumDate;
 
 @property (nonatomic, setter = setEmailField:) BOOL isEmailField;
 @property (nonatomic, setter = setPickerField:) BOOL isPickerField;
