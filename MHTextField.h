@@ -38,6 +38,14 @@ typedef void(^pickerChangedValueBlock)(id);
 - (BOOL) validate;
 - (void) setDateFieldWithFormat:(NSString *)dateFormat;
 
+/**
+ Get date string by Textfield's date formatter.
+ 
+ @param date Date which want to convert to string.
+ */
+- (NSString *)stringFromDate:(NSDate *)date;
+
+
 /*
  Invoked when text field is disabled or input is invalid. Override to set your own tint or background color.
  */

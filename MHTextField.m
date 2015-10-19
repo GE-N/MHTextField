@@ -446,6 +446,21 @@
   }
 }
 
+#pragma mark - Date picker's method
+
+- (NSString *)stringFromDate:(NSDate *)date {
+  if (self.dateFormat == nil) {
+    NSLog(@"MHTextField: Can not convert date to string because date format not available");
+    return nil;
+  }
+  
+  NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+  dateFormatter.dateFormat = self.dateFormat;
+  dateFormatter.calendar = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
+  
+  return [dateFormatter stringFromDate:date];
+}
+
 @end
 
 #pragma mark - UIKeyInput
