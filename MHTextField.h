@@ -9,6 +9,7 @@
 
 typedef void(^deleteBackwardBlock)(id);
 typedef void(^pickerChangedValueBlock)(id);
+typedef void(^controlBarChangedTextFieldBlock)(id);
 
 @interface MHTextField : UITextField
 
@@ -34,6 +35,12 @@ typedef void(^pickerChangedValueBlock)(id);
 
 @property (nonatomic, copy) void (^barButtonDisplayedBlock)(UIBarButtonItem*, UIBarButtonItem*);
 @property (nonatomic, copy) void (^deleteBackwardBlock)(MHTextField *);
+
+/**
+ An action block perform when user tabbed on keyboard's control "Previous/Next"
+ */
+@property (nonatomic, copy) void (^controlBarChangedTextFieldBlock)(MHTextField *);
+
 
 - (BOOL) validate;
 - (void) setDateFieldWithFormat:(NSString *)dateFormat;

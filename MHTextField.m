@@ -125,7 +125,11 @@
     
     while (!textField.isEnabled && tagIndex < [self.orderedTextFieldsResponder count])
         textField = [self.orderedTextFieldsResponder objectAtIndex:++tagIndex];
-    
+  
+    if (self.controlBarChangedTextFieldBlock) {
+      self.controlBarChangedTextFieldBlock(self);
+    }
+  
     [self becomeActive:textField];
 }
 
@@ -136,7 +140,11 @@
     
     while (!textField.isEnabled && tagIndex < [self.orderedTextFieldsResponder count])
         textField = [self.orderedTextFieldsResponder objectAtIndex:--tagIndex];
-    
+  
+    if (self.controlBarChangedTextFieldBlock) {
+      self.controlBarChangedTextFieldBlock(self);
+    }
+  
     [self becomeActive:textField];
 }
 
