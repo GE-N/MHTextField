@@ -7,9 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
+typedef enum ControlBarAction {
+  ControlBarActionUnknown,
+  ControlBarActionPrevious,
+  ControlBarActionNext,
+  ControlBarActionDone
+} ControlBarAction;
+
 typedef void(^deleteBackwardBlock)(id);
 typedef void(^pickerChangedValueBlock)(id);
-typedef void(^controlBarChangedTextFieldBlock)(id);
+typedef void(^controlBarChangedTextFieldBlock)(id, ControlBarAction);
 
 @interface MHTextField : UITextField
 
@@ -18,6 +25,7 @@ typedef void(^controlBarChangedTextFieldBlock)(id);
 @property (nonatomic, strong) UIScrollView *scrollView;
 
 @property (nonatomic, readonly) NSDate *selectedDate;
+@property (nonatomic, readonly) NSString *selectedDateString;
 @property (nonatomic, strong) NSString *dateFormat;
 @property (nonatomic, strong) NSDate *maximumDate;
 @property (nonatomic, strong) NSDate *minimumDate;
@@ -39,7 +47,7 @@ typedef void(^controlBarChangedTextFieldBlock)(id);
 /**
  An action block perform when user tabbed on keyboard's control "Previous/Next"
  */
-@property (nonatomic, copy) void (^controlBarChangedTextFieldBlock)(MHTextField *);
+@property (nonatomic, copy) void (^controlBarChangedTextFieldBlock)(MHTextField *, ControlBarAction);
 
 
 - (BOOL) validate;
@@ -64,5 +72,12 @@ typedef void(^controlBarChangedTextFieldBlock)(id);
 
 - (void)setKeyboardPreviousButtonEnable:(BOOL)val;
 - (void)setKeyboardNextButtonEnable:(BOOL)val;
+
+/**
+ 
+ */
+
+@property (nonatomic, copy) void (^previousBarButtonAction)(MHTextField *);
+@property (nonatomic, copy) void (^nextBarButtonAction)(MHTextField *);
 
 @end

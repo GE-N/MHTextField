@@ -120,32 +120,42 @@
 }
 
 - (void) nextButtonIsClicked:(id)sender{
+  if (self.nextBarButtonAction) {
+    self.nextBarButtonAction(self);
+  }
+  else {
     NSInteger tagIndex = self.tag;
     MHTextField *textField =  [self.orderedTextFieldsResponder objectAtIndex:++tagIndex];
     
     while (!textField.isEnabled && tagIndex < [self.orderedTextFieldsResponder count])
-        textField = [self.orderedTextFieldsResponder objectAtIndex:++tagIndex];
-  
+      textField = [self.orderedTextFieldsResponder objectAtIndex:++tagIndex];
+    
     if (self.controlBarChangedTextFieldBlock) {
-      self.controlBarChangedTextFieldBlock(self);
+      self.controlBarChangedTextFieldBlock(self, ControlBarActionNext);
     }
-  
+    
     [self becomeActive:textField];
+  }
 }
 
 - (void) previousButtonIsClicked:(id)sender{
+  if (self.previousBarButtonAction) {
+    self.previousBarButtonAction(self);
+  }
+  else {
     NSInteger tagIndex = self.tag;
     
     MHTextField *textField =  [self.orderedTextFieldsResponder objectAtIndex:--tagIndex];
     
     while (!textField.isEnabled && tagIndex < [self.orderedTextFieldsResponder count])
-        textField = [self.orderedTextFieldsResponder objectAtIndex:--tagIndex];
-  
+      textField = [self.orderedTextFieldsResponder objectAtIndex:--tagIndex];
+    
     if (self.controlBarChangedTextFieldBlock) {
-      self.controlBarChangedTextFieldBlock(self);
+      self.controlBarChangedTextFieldBlock(self, ControlBarActionPrevious);
     }
-  
+    
     [self becomeActive:textField];
+  }
 }
 
 - (void)becomeActive:(UITextField*)textField{
@@ -372,9 +382,14 @@
     [self setKeyboardWillHideNotificationObserver:[[NSNotificationCenter defaultCenter] addObserverForName:UIKeyboardWillHideNotification object:nil queue:nil usingBlock:^(NSNotification *notification){
         [self keyboardWillHide:notification];
     }]];
-    
-    [self setBarButtonNeedsDisplayAtTag:textField.tag];
-    
+  
+    if (self.nextBarButtonAction == nil && self.previousBarButtonAction == nil) {
+      [self setBarButtonNeedsDisplayAtTag:textField.tag];
+    } else {
+      self.nextBarButton.enabled = self.nextBarButtonAction != nil;
+      self.previousBarButton.enabled = self.previousBarButtonAction != nil;
+    }
+  
     if ([self.superview isKindOfClass:[UIScrollView class]] && self.scrollView == nil){
         self.scrollView = (UIScrollView*)self.superview;
     }
@@ -467,6 +482,22 @@
   dateFormatter.calendar = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
   
   return [dateFormatter stringFromDate:date];
+}
+
+- (NSString *)selectedDateString {
+  return [self stringFromDate:self.selectedDate];
+}
+
+//
+
+- (void)setPreviousBarButtonAction:(void (^)(MHTextField *))previousBarButtonAction {
+  _previousBarButtonAction = previousBarButtonAction;
+  self.previousBarButton.enabled = true;
+}
+
+- (void)setNextBarButtonAction:(void (^)(MHTextField *))nextBarButtonAction {
+  _nextBarButtonAction = nextBarButtonAction;
+  self.nextBarButton.enabled = true;
 }
 
 @end
