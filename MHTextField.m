@@ -187,7 +187,10 @@
 }
 
 - (void) selectInputView:(UITextField *)textField{
-    if (_isDateField || _isTimeField){
+    if (self.customInputView != nil) {
+        [textField setInputView:self.customInputView];
+    }
+    else if (_isDateField || _isTimeField){
         UIDatePicker *datePicker = [[UIDatePicker alloc] init];
         if (_isDateField)
             datePicker.datePickerMode = UIDatePickerModeDate;

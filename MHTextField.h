@@ -30,10 +30,11 @@ typedef void(^controlBarChangedTextFieldBlock)(id, ControlBarAction);
 @property (nonatomic, strong) NSDate *maximumDate;
 @property (nonatomic, strong) NSDate *minimumDate;
 
-@property (nonatomic, setter = setEmailField:) BOOL isEmailField;
-@property (nonatomic, setter = setPickerField:) BOOL isPickerField;
-@property (nonatomic, setter = setDateField:) BOOL isDateField;
-@property (nonatomic, setter = setTimeField:) BOOL isTimeField;
+@property (nonatomic, setter = setEmailField:)      BOOL isEmailField;
+@property (nonatomic, setter = setPickerField:)     BOOL isPickerField;
+@property (nonatomic, setter = setDateField:)       BOOL isDateField;
+@property (nonatomic, setter = setTimeField:)       BOOL isTimeField;
+@property (nonatomic, setter = setCustomInputView:) UIView *customInputView;
 @property (nonatomic, readonly) BOOL isValid;
 
 @property (nonatomic, strong) NSArray *pickerDatas;
