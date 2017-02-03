@@ -467,6 +467,9 @@
     self.text = selectedTitle;
     
     if (self.pickerChangedBlock) {
+      if ([pickerView selectedRowInComponent:0] == 0 && row != 0) {
+        [pickerView selectRow:row inComponent:0 animated:false];
+      }
       self.pickerChangedBlock(pickerView);
     }
   }
